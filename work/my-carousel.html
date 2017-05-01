@@ -21,9 +21,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
 
+      div > ::slotted(:not([selected])) {
+        display: none;
+      }
+
+      button {
+  position: absolute;
+  top: calc(50% - 20px);
+  padding: 0;
+  line-height: 40px;
+  border: none;
+  background: none;
+  color: #DDD;
+  font-size: 40px;
+  font-weight: bold;
+  opacity: 0.7;
+}
+
+button:hover,
+button:focus {
+  opacity: 1;
+}
+
+#prevBtn {
+  left: 12px;
+}
+
+#nextBtn {
+  right: 12px;
+}
+
+button[disabled] {
+  opacity: 0.4;
+}
+
     </style>
 
-    <p>TODO: Implement image carousel</p>
+    <div>
+      <slot></slot>
+    </div>
+
+    <button id="prevBtn" on-click="previous">&#x276E;</button>
+    <button id="nextBtn" on-click="next">&#x276F;</button>
 
   </template>
 
@@ -34,8 +73,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       static get is() { return 'my-carousel' }
 
+      static get properties() {
+        return {
+          selected: {
+            type: Object,
+            observer: '_selectedChanged'
+          }
+        };
+      }
+
+      _selectedChanged(selected, oldSelected) {
+        if (oldSelected) oldSelected.removeAttribute('selected');
+        if (selected) selected.setAttribute('selected', '');
+      }
+
+      previous() {
+        const elem = this.selected.previousElementSibling || this.lastElementChild;
+        if (elem) {
+          this.selected = elem;
+        }
+      }
+
+      next() {
+        const elem = this.selected.nextElementSibling || this.firstElementChild;
+        if (elem) {
+          this.selected = elem;
+        }
+      }
+
       connectedCallback() {
         super.connectedCallback();
+
+        this.selected = this.firstElementChild;
       }
 
     }
